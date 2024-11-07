@@ -49,17 +49,26 @@ document.getElementById('form-cultivo').addEventListener('submit', function(e) {
     const cultivo = { nombre: nombreCultivo, lat: latSeleccionada, lon: lonSeleccionada };
     cultivos.push(cultivo);
 
+    // Actualizar el campo de selección de cultivos en el formulario de recordatorios
+    const selectCultivoRiego = document.getElementById('cultivo-riego');
+    const option = document.createElement('option');
+    option.value = nombreCultivo;
+    option.textContent = nombreCultivo;
+    selectCultivoRiego.appendChild(option);
+
     const marker = L.marker([latSeleccionada, lonSeleccionada]).addTo(map)
       .bindPopup(`<b>${nombreCultivo}</b><br>Ubicación: ${latSeleccionada}, ${lonSeleccionada}`)
       .openPopup();
 
     cultivo.marker = marker;
 
+    // Agregar a la lista de cultivos en la interfaz
     const listaCultivos = document.getElementById('cultivos-lista');
     const li = document.createElement('li');
     li.innerHTML = `${nombreCultivo} - <button onclick="eliminarCultivo('${nombreCultivo}')">Eliminar</button>`;
     listaCultivos.appendChild(li);
 
+    // Limpiar el campo de entrada de cultivo
     document.getElementById('nombre-cultivo').value = '';
   } else {
     alert('Por favor, ingresa el nombre del cultivo.');
@@ -74,8 +83,61 @@ function eliminarCultivo(nombre) {
     cultivos.splice(cultivoIndex, 1);
     map.removeLayer(cultivo.marker);
 
+    // Eliminar de la lista de cultivos en la interfaz
     const listaCultivos = document.getElementById('cultivos-lista');
     const items = listaCultivos.getElementsByTagName('li');
+    for (let item of items) {
+      if (item.textContent.includes(nombre)) {
+        item.remove();
+        break;
+      }
+    }
+
+    // Eliminar la opción del campo de selección de riego
+    const selectCultivoRiego = document.getElementById('cultivo-riego');
+    const options = selectCultivoRiego.getElementsByTagName('option');
+    for (let option of options) {
+      if (option.value === nombre) {
+        option.remove();
+        break;
+      }
+    }
+  }
+}
+
+// Función para agregar un recordatorio de riego
+document.getElementById('form-riego').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const cultivoRiego = document.getElementById('cultivo-riego').value;
+  const fechaRiego = document.getElementById('fecha-riego').value;
+
+  if (!cultivoRiego || !fechaRiego) {
+    alert('Por favor, selecciona un cultivo y una fecha de riego.');
+    return;
+  }
+
+  // Agregar el recordatorio al array
+  recordatorios.push({ nombre: cultivoRiego, fecha: fechaRiego });
+
+  // Mostrar en la lista de recordatorios
+  const listaRecordatorios = document.getElementById('recordatorios-lista');
+  const li = document.createElement('li');
+  li.innerHTML = `${cultivoRiego} - Riego: ${fechaRiego} <button onclick="eliminarRecordatorio('${cultivoRiego}')">Eliminar</button>`;
+  listaRecordatorios.appendChild(li);
+
+  // Limpiar los campos del formulario de riego
+  document.getElementById('cultivo-riego').value = '';
+  document.getElementById('fecha-riego').value = '';
+});
+
+// Función para eliminar un recordatorio de riego
+function eliminarRecordatorio(nombre) {
+  const recordatorioIndex = recordatorios.findIndex(riego => riego.nombre === nombre);
+  if (recordatorioIndex !== -1) {
+    recordatorios.splice(recordatorioIndex, 1); // Eliminar recordatorio del array
+    // Eliminar de la lista de recordatorios en la interfaz
+    const listaRecordatorios = document.getElementById('recordatorios-lista');
+    const items = listaRecordatorios.getElementsByTagName('li');
     for (let item of items) {
       if (item.textContent.includes(nombre)) {
         item.remove();
@@ -85,19 +147,23 @@ function eliminarCultivo(nombre) {
   }
 }
 
-// Función para manejar el clic en el mapa
+// Manejador de clic en el mapa para seleccionar ubicación
 map.on('click', function(e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
 
+  // Si ya hay un marcador, lo actualizamos
   if (currentMarker) {
     currentMarker.setLatLng(e.latlng);
   } else {
+    // Si no hay un marcador, lo creamos
     currentMarker = L.marker([lat, lon]).addTo(map);
   }
 
+  // Guardar la latitud y longitud seleccionadas
   latSeleccionada = lat;
   lonSeleccionada = lon;
 
+  // Obtener el clima de esa ubicación
   getWeather(lat, lon);
 });
