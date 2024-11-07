@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriHelper - Gestión de Cultivos</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icons/favicon.ico">
+
+  <!-- Incluir la librería Leaflet para el mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  
+  <!-- Incluir la librería de FontAwesome para los iconos -->
+  <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>AgriHelper</h1>
+    <p class="tagline">Gestiona tus cultivos de forma fácil y eficiente</p>
+  </header>
+
+  <!-- Mapa -->
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+
+  <!-- Información del Clima -->
+  <div class="section" id="clima-info">
+    <h2>Clima Actual</h2>
+    <p>Cargando clima...</p>
+  </div>
+
+  <!-- Gestión de Cultivos -->
+  <div class="section">
+    <h2>Agregar Cultivo</h2>
+    <form id="form-cultivo">
+      <input type="text" id="nombre-cultivo" placeholder="Nombre del Cultivo" required>
+      <button type="submit"><i class="fas fa-seedling"></i> Agregar Cultivo</button>
+    </form>
+    <ul id="cultivos-lista"></ul>
+  </div>
+
+  <!-- Recordatorios de Riego -->
+  <div class="section">
+    <h2>Recordatorios de Riego</h2>
+    <form id="form-riego">
+      <select id="cultivo-riego" required>
+        <option value="">Selecciona un Cultivo</option>
+      </select>
+      <input type="date" id="fecha-riego" required>
+      <button type="submit"><i class="fas fa-tint"></i> Agregar Recordatorio</button>
+    </form>
+    <ul id="recordatorios-lista"></ul>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
